@@ -18,7 +18,7 @@ function App() {
         boxShadow: "0 4px 8px rgba(0,0,0,0.1)",
         marginBottom: "30px"
       }}>
-        <h1 style={{ color: "#2a60c3", marginBottom: "10px" }}>💼 ZF Chat Demo</h1>
+        <h1 style={{ color: "#2a60c3", marginBottom: "10px" }}>💼 ZF Chat Dimostrativo</h1>
         <p style={{ color: "#444" }}>
           Sito dimostrativo per testare l’assistente AI fiscale!!
         </p>
