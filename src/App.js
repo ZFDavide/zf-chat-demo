@@ -1,6 +1,9 @@
-import React from "react";
+import React, { useState } from "react";
+import Chat from "./Chat";
 
 function App() {
+  const [showChat, setShowChat] = useState(false);
+
   return (
     <div style={{
       fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
@@ -34,18 +37,23 @@ function App() {
           <li>✅ Non è consentito porre domande al di fuori dell’ambito di competenza dell’IA.</li>
         </ul>
 
-        <button style={{
-          marginTop: "30px",
-          padding: "12px 24px",
-          fontSize: "16px",
-          backgroundColor: "#2a60c3",
-          color: "#fff",
-          border: "none",
-          borderRadius: "8px",
-          cursor: "pointer"
-        }}>
+        <button
+          onClick={() => setShowChat(true)}
+          style={{
+            marginTop: "30px",
+            padding: "12px 24px",
+            fontSize: "16px",
+            backgroundColor: "#2a60c3",
+            color: "#fff",
+            border: "none",
+            borderRadius: "8px",
+            cursor: "pointer"
+          }}
+        >
           Simula una chat fiscale
         </button>
+
+        {showChat && <Chat />}
       </main>
 
       <footer style={{ textAlign: "center", marginTop: "40px", color: "#888" }}>
