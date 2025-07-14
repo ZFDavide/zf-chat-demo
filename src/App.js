@@ -17,7 +17,7 @@ function App() {
       }}>
         <h1 style={{ color: "#2a60c3", marginBottom: "10px" }}>💼 ZF Chat Demo</h1>
         <p style={{ color: "#444" }}>
-          Questo è un sito dimostrativo per testare l’integrazione della nostra assistente AI fiscale.
+          Sito dimostrativo per testare l’assistente AI fiscale.
         </p>
       </header>
 
@@ -29,9 +29,9 @@ function App() {
       }}>
         <h2 style={{ marginBottom: "15px", color: "#333" }}>🚀 Funzionalità disponibili</h2>
         <ul style={{ lineHeight: "1.8" }}>
-          <li>✅ Interfaccia semplice e moderna</li>
-          <li>✅ Risposte automatiche a domande fiscali</li>
-          <li>🔒 Privacy garantita (demo)</li>
+          <li>✅ Risposte automatiche a domande fiscali in campo IVA</li>
+          <li>✅ Contatto di un professionista in caso di domande troppo complesse</li>
+          <li>✅ Non è consentito porre domande al di fuori dell’ambito di competenza dell’IA.</li>
         </ul>
 
         <button style={{
