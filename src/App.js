@@ -50,7 +50,7 @@ function App() {
             cursor: "pointer"
           }}
         >
-          Simula una chat fiscale
+          Avvia la chat fiscale! 
         </button>
 
         {showChat && <Chat />}
