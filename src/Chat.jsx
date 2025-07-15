@@ -25,7 +25,7 @@ function Chat() {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${process.env.REACT_APP_OPENAI_API_KEY}`,
-          "OpenAI-Beta": "assistants=v1"
+          "OpenAI-Beta": "assistants=v2"
         },
         body: JSON.stringify({ messages: [{ role: "user", content: userInput }] }),
       });
@@ -39,7 +39,7 @@ function Chat() {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${process.env.REACT_APP_OPENAI_API_KEY}`,
-          "OpenAI-Beta": "assistants=v1"
+          "OpenAI-Beta": "assistants=v2"
         },
         body: JSON.stringify({ assistant_id: process.env.REACT_APP_ASSISTANT_ID }),
       });
@@ -55,7 +55,7 @@ function Chat() {
         const statusRes = await fetch(`https://api.openai.com/v1/threads/${threadId}/runs/${runId}`, {
           headers: {
             Authorization: `Bearer ${process.env.REACT_APP_OPENAI_API_KEY}`,
-            "OpenAI-Beta": "assistants=v1"
+            "OpenAI-Beta": "assistants=v2"
           },
         });
         const statusData = await statusRes.json();
@@ -71,7 +71,7 @@ function Chat() {
       const messagesRes = await fetch(`https://api.openai.com/v1/threads/${threadId}/messages`, {
         headers: {
           Authorization: `Bearer ${process.env.REACT_APP_OPENAI_API_KEY}`,
-          "OpenAI-Beta": "assistants=v1"
+          "OpenAI-Beta": "assistants=v2"
         },
       });
 
