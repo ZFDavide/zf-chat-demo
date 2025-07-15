@@ -3,6 +3,7 @@ import React, { useState } from "react";
 function Chat() {
   const [messages, setMessages] = useState([]);
   const [userInput, setUserInput] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleSend = async () => {
     if (!userInput.trim()) return;
@@ -11,34 +12,75 @@ function Chat() {
     const updatedMessages = [...messages, userMessage];
     setMessages(updatedMessages);
     setUserInput("");
+    setLoading(true);
 
     try {
-      const response = await fetch("https://api.openai.com/v1/assistants/" + process.env.REACT_APP_ASSISTANT_ID + "/runs", {
+      // 1. Crea un thread
+      const threadRes = await fetch("https://api.openai.com/v1/threads", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${process.env.REACT_APP_OPENAI_API_KEY}`,
+          "OpenAI-Beta": "assistants=v1"
         },
-        body: JSON.stringify({
-          assistant_id: process.env.REACT_APP_ASSISTANT_ID,
-          instructions: "",
-          messages: updatedMessages,
-        }),
+        body: JSON.stringify({ messages: [{ role: "user", content: userInput }] }),
       });
 
-      const data = await response.json();
-      const assistantReply = {
-        role: "assistant",
-        content: data.choices?.[0]?.message?.content || "Errore nella risposta.",
-      };
+      const thread = await threadRes.json();
+      const threadId = thread.id;
 
-      setMessages((prev) => [...prev, assistantReply]);
+      // 2. Crea un run nel thread
+      const runRes = await fetch(`https://api.openai.com/v1/threads/${threadId}/runs`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${process.env.REACT_APP_OPENAI_API_KEY}`,
+          "OpenAI-Beta": "assistants=v1"
+        },
+        body: JSON.stringify({ assistant_id: process.env.REACT_APP_ASSISTANT_ID }),
+      });
+
+      const run = await runRes.json();
+      const runId = run.id;
+
+      // 3. Attendi che il run sia completato (polling)
+      let status = "in_progress";
+      while (status !== "completed" && status !== "failed") {
+        await new Promise((resolve) => setTimeout(resolve, 1500));
+        const statusRes = await fetch(`https://api.openai.com/v1/threads/${threadId}/runs/${runId}`, {
+          headers: {
+            Authorization: `Bearer ${process.env.REACT_APP_OPENAI_API_KEY}`,
+            "OpenAI-Beta": "assistants=v1"
+          },
+        });
+        const statusData = await statusRes.json();
+        status = statusData.status;
+      }
+
+      if (status === "failed") {
+        throw new Error("Run fallito");
+      }
+
+      // 4. Ottieni i messaggi del thread
+      const messagesRes = await fetch(`https://api.openai.com/v1/threads/${threadId}/messages`, {
+        headers: {
+          Authorization: `Bearer ${process.env.REACT_APP_OPENAI_API_KEY}`,
+          "OpenAI-Beta": "assistants=v1"
+        },
+      });
+
+      const messagesData = await messagesRes.json();
+      const lastMessage = messagesData.data.find(msg => msg.role === "assistant");
+
+      setMessages((prev) => [...prev, { role: "assistant", content: lastMessage?.content[0]?.text?.value || "Nessuna risposta." }]);
     } catch (error) {
       console.error("Errore:", error);
       setMessages((prev) => [
         ...prev,
         { role: "assistant", content: "Errore nella comunicazione con l'assistente." },
       ]);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -48,6 +90,7 @@ function Chat() {
         {messages.map((msg, idx) => (
           <div key={idx}><strong>{msg.role === "user" ? "Tu" : "AI"}:</strong> {msg.content}</div>
         ))}
+        {loading && <div><strong>AI:</strong> Sto pensando...</div>}
       </div>
       <input
         value={userInput}
