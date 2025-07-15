@@ -114,7 +114,7 @@ function Chat() {
         {messages.map((msg, idx) => (
           <div key={idx} className={`message ${msg.role}`}>
             <span className="label">{msg.role === "user" ? "🙋‍♂️:" : "🤖:"}</span>
-            <span>{msg.content}</span>
+            <span>{msg.content.replace(/【\\d+:\\d+†source】/g, '')}</span>
           </div>
         ))}
         {loading && (
@@ -132,8 +132,9 @@ function Chat() {
         />
         <button onClick={handleSend}>Invia</button>
       </div>
-
-      {debug.length > 0 && (
+      
+      {/* debug 
+      debug.length > 0 && (
         <div className="debug-box">
           <strong>Debug log:</strong>
           <ul>
@@ -142,7 +143,7 @@ function Chat() {
             ))}
           </ul>
         </div>
-      )}
+      )*/}
     </div>
   );
 }
