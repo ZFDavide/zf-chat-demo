@@ -5,60 +5,16 @@ function App() {
   const [showChat, setShowChat] = useState(false);
 
   return (
-    <div style={{
-      fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-      background: "linear-gradient(to bottom right, #f0f4ff, #dbe9ff)",
-      minHeight: "100vh",
-      padding: "40px"
-    }}>
-      <header style={{
-        backgroundColor: "#ffffff",
-        padding: "20px",
-        borderRadius: "12px",
-        boxShadow: "0 4px 8px rgba(0,0,0,0.1)",
-        marginBottom: "30px"
-      }}>
-        <h1 style={{ color: "#2a60c3", marginBottom: "10px" }}>💼 ZF Chat Dimostrativo</h1>
-        <p style={{ color: "#444" }}>
-          Sito dimostrativo per testare l’assistente AI fiscale!!
-        </p>
-      </header>
-
-      <main style={{
-        backgroundColor: "#ffffff",
-        padding: "30px",
-        borderRadius: "12px",
-        boxShadow: "0 4px 12px rgba(0,0,0,0.1)"
-      }}>
-        <h2 style={{ marginBottom: "15px", color: "#333" }}>🚀 Funzionalità disponibili</h2>
-        <ul style={{ lineHeight: "1.8" }}>
-          <li>✅ Risposte automatiche a domande fiscali in campo IVA</li>
-          <li>✅ Contatto di un professionista in caso di domande troppo complesse</li>
-          <li>✅ Non è consentito porre domande al di fuori dell’ambito di competenza dell’IA.</li>
-        </ul>
-
-        <button
-          onClick={() => setShowChat(true)}
-          style={{
-            marginTop: "30px",
-            padding: "12px 24px",
-            fontSize: "16px",
-            backgroundColor: "#2a60c3",
-            color: "#fff",
-            border: "none",
-            borderRadius: "8px",
-            cursor: "pointer"
-          }}
-        >
-          Avvia la chat fiscale! 
-        </button>
-
-        {showChat && <Chat />}
-      </main>
-
-      <footer style={{ textAlign: "center", marginTop: "40px", color: "#888" }}>
-        © 2025 ZF Srl - Progetto dimostrativo
-      </footer>
+    <div style={{ fontFamily: "Arial", padding: "40px" }}>
+      <h1 style={{ color: "#2a60c3" }}>ZF Chat DEMO Funzionante</h1>
+      <p>Benvenuto nella chat fiscale ZF. Clicca per iniziare una simulazione.</p>
+      <button
+        onClick={() => setShowChat(true)}
+        style={{ padding: "12px", background: "#2a60c3", color: "#fff", border: "none", borderRadius: "6px" }}
+      >
+        Simula una chat fiscale
+      </button>
+      {showChat && <Chat />}
     </div>
   );
 }
