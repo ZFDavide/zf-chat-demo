@@ -123,7 +123,7 @@ function Chat() {
           <div className="message assistant">
             <span className="label">🤖 AI:</span> <span className="typing-dots">Sto pensando{thinkingDots}</span>
           </div>
-        ))}
+        )}
       </div>
 
       <div className="chat-input">
