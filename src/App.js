@@ -6,7 +6,7 @@ function App() {
 
   return (
     <div style={{ fontFamily: "Arial", padding: "40px" }}>
-      <h1 style={{ color: "#2a60c3" }}>💼 ZF ChatAI</h1>
+      <h1 style={{ color: "#2a60c3" }}>🤖 ZF ChatAI</h1>
       <p>Benvenuto nella chat di ZF. Tramite questa chat puoi fare tutte le domande che vuoi in ambito fiscale!!</p>
       <button
         onClick={() => setShowChat(true)}
