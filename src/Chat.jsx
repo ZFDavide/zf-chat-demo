@@ -114,12 +114,12 @@ function Chat() {
         {messages.map((msg, idx) => (
           <div key={idx} className={`message ${msg.role}`}>
             <span className="label">{msg.role === "user" ? "🙋‍♂️:" : "🤖:"}</span>
-            <span>{msg.content.replace(/【\\d+:\\d+†source】/g, '')}</span>
+            <span>{msg.content.replace(/【[^】]+†[^】]+】/g, '')}</span>
           </div>
         ))}
         {loading && (
           <div className="message assistant">
-            <span className="label">🤖 AI:</span> <span className="typing-dots">Sto pensando{thinkingDots}</span>
+            <span className="label">🤖:</span> <span className="typing-dots">Sto pensando{thinkingDots}</span>
           </div>
         )}
       </div>
