@@ -21,7 +21,6 @@ function Chat() {
     try {
       logDebug("Creo il thread...");
       const threadRes = await fetch("https://api.openai.com/v1/threads", {
-      logDebug("Risposta API thread: " + JSON.stringify(thread));
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -30,11 +29,10 @@ function Chat() {
         },
         body: JSON.stringify({ messages: [{ role: "user", content: userInput }] }),
       });
-
       const thread = await threadRes.json();
+      logDebug("Risposta API thread: " + JSON.stringify(thread));
       const threadId = thread.id;
       logDebug("Thread creato: " + threadId);
-
       logDebug("Avvio run...");
       const runRes = await fetch(`https://api.openai.com/v1/threads/${threadId}/runs`, {
         method: "POST",
