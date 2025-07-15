@@ -41,7 +41,6 @@ function Chat() {
       });
 
       const thread = await threadRes.json();
-      logDebug("Risposta API thread: " + JSON.stringify(thread));
       const threadId = thread.id;
       logDebug("Thread creato: " + threadId);
 
@@ -57,7 +56,6 @@ function Chat() {
       });
 
       const run = await runRes.json();
-      logDebug("Risposta API run: " + JSON.stringify(run));
       const runId = run.id;
       logDebug("Run avviato: " + runId);
 
@@ -115,7 +113,7 @@ function Chat() {
       <div className="chat-box">
         {messages.map((msg, idx) => (
           <div key={idx} className={`message ${msg.role}`}>
-            <span className="label">{msg.role === "user" ? "🙋‍♂️ Tu:" : "🤖 AI:"}</span>
+            <span className="label">{msg.role === "user" ? "🙋‍♂️:" : "🤖:"}</span>
             <span>{msg.content}</span>
           </div>
         ))}
