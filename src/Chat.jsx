@@ -1,12 +1,22 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import "./Chat.css";
 
 function Chat() {
   const [messages, setMessages] = useState([]);
   const [userInput, setUserInput] = useState("");
   const [loading, setLoading] = useState(false);
+  const [thinkingDots, setThinkingDots] = useState(".");
   const [debug, setDebug] = useState([]);
 
-  const logDebug = (msg) => setDebug(prev => [...prev, msg]);
+  useEffect(() => {
+    if (!loading) return;
+    const interval = setInterval(() => {
+      setThinkingDots((prev) => (prev.length >= 3 ? "." : prev + "."));
+    }, 500);
+    return () => clearInterval(interval);
+  }, [loading]);
+
+  const logDebug = (msg) => setDebug((prev) => [...prev, msg]);
 
   const handleSend = async () => {
     if (!userInput.trim()) return;
@@ -25,21 +35,23 @@ function Chat() {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${process.env.REACT_APP_OPENAI_API_KEY}`,
-          "OpenAI-Beta": "assistants=v2"
+          "OpenAI-Beta": "assistants=v2",
         },
         body: JSON.stringify({ messages: [{ role: "user", content: userInput }] }),
       });
+
       const thread = await threadRes.json();
       logDebug("Risposta API thread: " + JSON.stringify(thread));
       const threadId = thread.id;
       logDebug("Thread creato: " + threadId);
+
       logDebug("Avvio run...");
       const runRes = await fetch(`https://api.openai.com/v1/threads/${threadId}/runs`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${process.env.REACT_APP_OPENAI_API_KEY}`,
-          "OpenAI-Beta": "assistants=v2"
+          "OpenAI-Beta": "assistants=v2",
         },
         body: JSON.stringify({ assistant_id: process.env.REACT_APP_ASSISTANT_ID }),
       });
@@ -55,7 +67,7 @@ function Chat() {
         const statusRes = await fetch(`https://api.openai.com/v1/threads/${threadId}/runs/${runId}`, {
           headers: {
             Authorization: `Bearer ${process.env.REACT_APP_OPENAI_API_KEY}`,
-            "OpenAI-Beta": "assistants=v2"
+            "OpenAI-Beta": "assistants=v2",
           },
         });
         const statusData = await statusRes.json();
@@ -71,15 +83,21 @@ function Chat() {
       const messagesRes = await fetch(`https://api.openai.com/v1/threads/${threadId}/messages`, {
         headers: {
           Authorization: `Bearer ${process.env.REACT_APP_OPENAI_API_KEY}`,
-          "OpenAI-Beta": "assistants=v2"
+          "OpenAI-Beta": "assistants=v2",
         },
       });
 
       const messagesData = await messagesRes.json();
-      const lastMessage = messagesData.data.find(msg => msg.role === "assistant");
+      const lastMessage = messagesData.data.find((msg) => msg.role === "assistant");
 
       logDebug("Risposta trovata.");
-      setMessages((prev) => [...prev, { role: "assistant", content: lastMessage?.content[0]?.text?.value || "Nessuna risposta." }]);
+      setMessages((prev) => [
+        ...prev,
+        {
+          role: "assistant",
+          content: lastMessage?.content[0]?.text?.value || "Nessuna risposta.",
+        },
+      ]);
     } catch (error) {
       console.error("Errore:", error);
       logDebug("Errore nella comunicazione: " + error.message);
@@ -93,26 +111,37 @@ function Chat() {
   };
 
   return (
-    <div style={{ marginTop: "30px", padding: "20px", border: "1px solid #ccc", borderRadius: "8px", background: "#f9f9f9" }}>
-      <div style={{ marginBottom: "10px", maxHeight: "200px", overflowY: "auto" }}>
+    <div className="chat-container">
+      <div className="chat-box">
         {messages.map((msg, idx) => (
-          <div key={idx}><strong>{msg.role === "user" ? "Tu" : "AI"}:</strong> {msg.content}</div>
+          <div key={idx} className={`message ${msg.role}`}>
+            <span className="label">{msg.role === "user" ? "🙋‍♂️ Tu:" : "🤖 AI:"}</span>
+            <span>{msg.content}</span>
+          </div>
         ))}
-        {loading && <div><strong>AI:</strong> Sto pensando...</div>}
+        {loading && (
+          <div className="message assistant">
+            <span className="label">🤖 AI:</span> <span className="typing-dots">Sto pensando{thinkingDots}</span>
+          </div>
+        ))}
       </div>
-      <input
-        value={userInput}
-        onChange={(e) => setUserInput(e.target.value)}
-        placeholder="Scrivi una domanda fiscale..."
-        style={{ padding: "8px", width: "70%" }}
-      />
-      <button onClick={handleSend} style={{ padding: "8px 16px", marginLeft: "10px" }}>Invia</button>
+
+      <div className="chat-input">
+        <input
+          value={userInput}
+          onChange={(e) => setUserInput(e.target.value)}
+          placeholder="Scrivi una domanda fiscale..."
+        />
+        <button onClick={handleSend}>Invia</button>
+      </div>
 
       {debug.length > 0 && (
-        <div style={{ marginTop: "20px", padding: "10px", background: "#eef", borderRadius: "6px" }}>
+        <div className="debug-box">
           <strong>Debug log:</strong>
           <ul>
-            {debug.map((line, i) => <li key={i}>{line}</li>)}
+            {debug.map((line, i) => (
+              <li key={i}>{line}</li>
+            ))}
           </ul>
         </div>
       )}
