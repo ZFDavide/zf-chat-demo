@@ -4,6 +4,9 @@ function Chat() {
   const [messages, setMessages] = useState([]);
   const [userInput, setUserInput] = useState("");
   const [loading, setLoading] = useState(false);
+  const [debug, setDebug] = useState([]);
+
+  const logDebug = (msg) => setDebug(prev => [...prev, msg]);
 
   const handleSend = async () => {
     if (!userInput.trim()) return;
@@ -13,9 +16,10 @@ function Chat() {
     setMessages(updatedMessages);
     setUserInput("");
     setLoading(true);
+    setDebug(["Inizio processo di risposta..."]);
 
     try {
-      // 1. Crea un thread
+      logDebug("Creo il thread...");
       const threadRes = await fetch("https://api.openai.com/v1/threads", {
         method: "POST",
         headers: {
@@ -28,8 +32,9 @@ function Chat() {
 
       const thread = await threadRes.json();
       const threadId = thread.id;
+      logDebug("Thread creato: " + threadId);
 
-      // 2. Crea un run nel thread
+      logDebug("Avvio run...");
       const runRes = await fetch(`https://api.openai.com/v1/threads/${threadId}/runs`, {
         method: "POST",
         headers: {
@@ -42,8 +47,8 @@ function Chat() {
 
       const run = await runRes.json();
       const runId = run.id;
+      logDebug("Run avviato: " + runId);
 
-      // 3. Attendi che il run sia completato (polling)
       let status = "in_progress";
       while (status !== "completed" && status !== "failed") {
         await new Promise((resolve) => setTimeout(resolve, 1500));
@@ -55,13 +60,14 @@ function Chat() {
         });
         const statusData = await statusRes.json();
         status = statusData.status;
+        logDebug("Stato corrente del run: " + status);
       }
 
       if (status === "failed") {
         throw new Error("Run fallito");
       }
 
-      // 4. Ottieni i messaggi del thread
+      logDebug("Recupero i messaggi del thread...");
       const messagesRes = await fetch(`https://api.openai.com/v1/threads/${threadId}/messages`, {
         headers: {
           Authorization: `Bearer ${process.env.REACT_APP_OPENAI_API_KEY}`,
@@ -72,9 +78,11 @@ function Chat() {
       const messagesData = await messagesRes.json();
       const lastMessage = messagesData.data.find(msg => msg.role === "assistant");
 
+      logDebug("Risposta trovata.");
       setMessages((prev) => [...prev, { role: "assistant", content: lastMessage?.content[0]?.text?.value || "Nessuna risposta." }]);
     } catch (error) {
       console.error("Errore:", error);
+      logDebug("Errore nella comunicazione: " + error.message);
       setMessages((prev) => [
         ...prev,
         { role: "assistant", content: "Errore nella comunicazione con l'assistente." },
@@ -99,6 +107,15 @@ function Chat() {
         style={{ padding: "8px", width: "70%" }}
       />
       <button onClick={handleSend} style={{ padding: "8px 16px", marginLeft: "10px" }}>Invia</button>
+
+      {debug.length > 0 && (
+        <div style={{ marginTop: "20px", padding: "10px", background: "#eef", borderRadius: "6px" }}>
+          <strong>Debug log:</strong>
+          <ul>
+            {debug.map((line, i) => <li key={i}>{line}</li>)}
+          </ul>
+        </div>
+      )}
     </div>
   );
 }
